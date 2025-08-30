@@ -3,6 +3,10 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
   try {
+    const { idea } = req.body;
+    if (!idea) {
+      return res.status(400).json({ error: 'Idea is required.' });
+    }
     // AI logic will go here
     res.status(200).json({ message: 'Request received successfully!' });
   } catch (error) {
