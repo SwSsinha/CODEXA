@@ -14,6 +14,20 @@ const generateBusinessPlan = async (idea) => {
   return text;
 };
 
+const generateTechStack = async (businessPlanText) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+  const prompt = `You are a CTO and senior software architect. Based on the following business plan, recommend a complete technology stack. The recommendation should be concise and include a frontend framework, a backend framework, and a database.
+
+Business Plan:
+${businessPlanText}`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  return text;
+};
+
 module.exports = {
   generateBusinessPlan,
+  generateTechStack,
 };
