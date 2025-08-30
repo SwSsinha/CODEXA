@@ -1,14 +1,11 @@
 const { GoogleGenAI } = require('@google/genai');
-require('dotenv').config({ path: '../.env' });
 
-// Correctly initialize the client.
-// The SDK will automatically pick up the GEMINI_API_KEY from the .env file.
+// The dotenv config is removed from here. It's handled in the main index.js.
 const ai = new GoogleGenAI({});
 
 const generateBusinessPlan = async (idea) => {
   const prompt = `You are an expert startup strategist and market analyst. For the user's idea: '${idea}', generate a comprehensive one-page business brief. The brief must include two distinct sections: 1. A Lean Canvas Plan (with Problem, Solution, Key Metrics, etc.). 2. A Market & Competitor Analysis (identifying 2-3 potential competitors and a summary of the market landscape). Structure the entire output in clean, well-defined markdown.`;
 
-  // Correct API call structure
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
     contents: prompt,
@@ -16,8 +13,9 @@ const generateBusinessPlan = async (idea) => {
   return response.text;
 };
 
-const generateTechStack = async (businessPlanText) => {
-  const prompt = `You are a CTO and senior software architect. Based on the following business plan, recommend a complete technology stack. The recommendation should be concise and include a frontend framework, a backend framework, and a database.\n\nBusiness Plan:\n${businessPlanText}`;
+// UPDATED: Now accepts 'idea' for better context
+const generateTechStack = async (idea, businessPlanText) => {
+  const prompt = `You are a CTO and senior software architect. Based on the user's core idea and the following business plan, recommend a complete technology stack. The recommendation should be concise and include a frontend framework, a backend framework, and a database.\n\nCore Idea: '${idea}'\n\nBusiness Plan:\n${businessPlanText}`;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
@@ -26,8 +24,15 @@ const generateTechStack = async (businessPlanText) => {
   return response.text;
 };
 
-const generateBounties = async (businessPlanText, techStackText) => {
-  const prompt = `You are a senior project manager and scrum master. Based on the following business plan and technology stack, create a list of 10-12 actionable development tasks or "bounties" to build the MVP. Each bounty should be a clear, concise task that a developer can pick up.\n\nBusiness Plan:\n${businessPlanText}\n\nTechnology Stack:\n${techStackText}`;
+// UPDATED: Now accepts 'idea' for better context
+const generateBounties = async (idea, businessPlanText, techStackText) => {
+  const prompt = `You are a task-generation AI. Based on the provided business plan and tech stack, output a list of 10-12 actionable developer tasks for the MVP. Your entire response must be a simple list of the task titles ONLY, with each task on a new line. Do NOT include numbers, bullets, introductory paragraphs, or any other text.
+
+Core Idea: '${idea}'
+Business Plan:
+${businessPlanText}
+Technology Stack:
+${techStackText}`;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',

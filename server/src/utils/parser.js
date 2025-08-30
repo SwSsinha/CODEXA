@@ -1,23 +1,22 @@
 /**
- * Parses a string of bounties, typically from AI output, into a JSON array.
- * @param {string} bountiesText - The raw text containing the list of bounties.
- * @returns {Array<Object>} A list of bounty objects, each with a 'title' and 'id'.
+ * Parses a clean, newline-separated string of bounties from AI output into a JSON array.
+ * @param {string} bountiesText - The raw text containing the list of bounties, one per line.
+ * @returns {Array<Object>} A list of bounty objects, each with a unique 'id' and a 'title'.
  */
 const parseBounties = (bountiesText) => {
+  // Return an empty array if the input is null, undefined, or an empty string.
   if (!bountiesText) {
     return [];
   }
 
-  // Split the text by newlines and filter out any empty lines.
+  // Split the text by newlines and filter out any resulting empty lines.
   const lines = bountiesText.split('\n').filter(line => line.trim() !== '');
 
-  // Map each line to an object with a title and a unique ID.
+  // Map each clean line to an object with a unique ID and the task title.
   const bounties = lines.map((line, index) => {
-    // Clean up the line by removing markdown list characters like *, -, or numbers.
-    const title = line.replace(/^[\d.*-]+\s*/, '').trim();
     return {
       id: `bounty-${index + 1}`,
-      title: title,
+      title: line.trim(), // We just need to trim whitespace now.
     };
   });
 
