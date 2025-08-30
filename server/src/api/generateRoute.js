@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { generateBusinessPlan } = require('../services/geminiService');
 
 router.post('/', async (req, res) => {
   try {
@@ -7,8 +8,8 @@ router.post('/', async (req, res) => {
     if (!idea) {
       return res.status(400).json({ error: 'Idea is required.' });
     }
-    // AI logic will go here
-    res.status(200).json({ message: 'Request received successfully!' });
+    const businessPlanText = await generateBusinessPlan(idea);
+    res.status(200).json({ businessPlan: businessPlanText });
   } catch (error) {
     console.error('Error generating plan:', error);
     res.status(500).json({ error: 'Failed to generate plan.' });
