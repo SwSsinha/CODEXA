@@ -27,7 +27,24 @@ ${businessPlanText}`;
   return text;
 };
 
+const generateBounties = async (businessPlanText, techStackText) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"});
+  const prompt = `You are a senior project manager and scrum master. Based on the following business plan and technology stack, create a list of 10-12 actionable development tasks or "bounties" to build the MVP. Each bounty should be a clear, concise task that a developer can pick up.
+
+Business Plan:
+${businessPlanText}
+
+Technology Stack:
+${techStackText}`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+  return text;
+};
+
 module.exports = {
   generateBusinessPlan,
   generateTechStack,
+  generateBounties,
 };
