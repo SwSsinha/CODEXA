@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { generateBusinessPlan, generateTechStack, generateBounties } = require('../services/geminiService');
+const { parseBounties } = require('../utils/parser');
 
 router.post('/', async (req, res) => {
   try {
@@ -11,11 +12,15 @@ router.post('/', async (req, res) => {
     const businessPlanText = await generateBusinessPlan(idea);
     const techStackText = await generateTechStack(businessPlanText);
     const bountiesText = await generateBounties(businessPlanText, techStackText);
-    res.status(200).json({
+    const bountiesJSON = parseBounties(bountiesText);
+
+    const finalResponse = {
       businessPlan: businessPlanText,
       techStack: techStackText,
-      bounties: bountiesText,
-    });
+      bounties: bountiesJSON,
+    };
+
+    res.status(200).json(finalResponse);
   } catch (error) {
     console.error('Error generating plan:', error);
     res.status(500).json({ error: 'Failed to generate plan.' });
